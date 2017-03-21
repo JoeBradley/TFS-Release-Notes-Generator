@@ -1,0 +1,58 @@
+API Version:
+1.0
+
+Instance:
+christopher-cassidy.visualstudio.com
+
+Puffin Project Name:
+Puffin
+
+Puffin Project GUID:
+b41f157a-fb78-4971-b73e-55e4a6210a46
+
+Puffin Repository GUID:
+c5fa7207-cd50-4c74-9546-c9a81b471e0c
+
+V1.0 tag ObjectId:
+cc3f16b84843c1231721d1b9bd611b3bac165c18
+
+Get projects:
+GET https://{instance}/DefaultCollection/_apis/projects?api-version={version}[&stateFilter{string}&$top={integer}&skip={integer}]
+
+https://christopher-cassidy.visualstudio.com/DefaultCollection/_apis/projects?api-version=1.0
+
+
+Get repositories:
+GET https://{instance}/DefaultCollection/[{project}]/_apis/git/repositories?api-version={version}
+
+https://christopher-cassidy.visualstudio.com/DefaultCollection/_apis/git/repositories?api-version=1.0
+
+
+Get Git Commits:
+GET https://{instance}/DefaultCollection/_apis/git/repositories/{repository}/commits?api-version={version}[&branch={string}&commit={string}&itemPath={string}&committer={string}&author={string}&fromDate={dateTime}&toDate={dateTime}[&$top={integer}&$skip={integer}]
+
+https://christopher-cassidy.visualstudio.com/DefaultCollection/_apis/git/repositories/c5fa7207-cd50-4c74-9546-c9a81b471e0c/commits?api-version=1.0&branch=master
+
+
+Get Git Commit:
+GET https://{instance}/DefaultCollection/_apis/git/repositories/{repository}/commits/{commitId}?api-version={version}[&changeCount={integer}]
+
+https://christopher-cassidy.visualstudio.com/DefaultCollection/_apis/git/repositories/c5fa7207-cd50-4c74-9546-c9a81b471e0c/commits/c790bb7ac6d842b244ca0a354632bccd9c28ed5e?api-version=1.0
+
+
+Get Git Refs:
+GET https://{instance}/DefaultCollection/[{project}]/_apis/git/repositories/{repository}/refs[/{filter}]?api-version={version}[&includeStatuses={bool}]
+
+https://christopher-cassidy.visualstudio.com/DefaultCollection/_apis/git/repositories/c5fa7207-cd50-4c74-9546-c9a81b471e0c/refs?api-version=1.0&includeStatuses=true
+
+Get Git Tags:
+GET https://{instance}/DefaultCollection/[{project}]/_apis/git/repositories/{repository}/refs[/{filter}]?api-version={version}[&includeStatuses={bool}]
+
+https://christopher-cassidy.visualstudio.com/DefaultCollection/_apis/git/repositories/c5fa7207-cd50-4c74-9546-c9a81b471e0c/refs/tags?api-version=1.0
+
+
+Get commits with comment like: Merge branch 'release/1.0'
+	
+Work Item Query Language:
+POST https://{instance}/DefaultCollection/[{project}/]_apis/wit/wiql?api-version={version}
+

@@ -7,43 +7,6 @@ using System.Threading.Tasks;
 
 namespace TFS_Release_Notes_Generator.Models
 {
-    #region Commit Response
-
-    public class Author
-    {
-        public string name { get; set; }
-        public string email { get; set; }
-        public DateTime date { get; set; }
-    }
-
-    public class Committer
-    {
-        public string name { get; set; }
-        public string email { get; set; }
-        public DateTime date { get; set; }
-    }
-
-    public class ChangeCounts
-    {
-        public int Add { get; set; }
-        public int Edit { get; set; }
-        public int Delete { get; set; }
-    }
-
-    public class Commit
-    {
-        public string commitId { get; set; }
-        public Author author { get; set; }
-        public Committer committer { get; set; }
-        public string comment { get; set; }
-        public ChangeCounts changeCounts { get; set; }
-        public string url { get; set; }
-        public string remoteUrl { get; set; }
-        public bool? commentTruncated { get; set; }
-    }
-
-    #endregion
-
     #region Wiql response
 
     public class Reference
@@ -64,18 +27,7 @@ namespace TFS_Release_Notes_Generator.Models
         public int id { get; set; }
         public string url { get; set; }
     }
-
-    public class WiqlResponse
-    {
-        public string queryType { get; set; }
-        public string queryResultType { get; set; }
-        // might need to be string
-        public DateTime asOf { get; set; }
-        public List<Reference> columns { get; set; }
-        public List<SortColumn> sortColumns { get; set; }
-        public List<WorkItem> workItems { get; set; }
-    }
-
+    
     #endregion
 
     #region WorkItemDetails
@@ -131,14 +83,13 @@ namespace TFS_Release_Notes_Generator.Models
         [JsonProperty("System.Description")]
         public string Description { get; set; }
     }
-
-
+    
     public class Href
     {
         public string href { get; set; }
     }
 
-    public class Links
+    public class WorkItemLinks
     {
         public Href self { get; set; }
         public Href workItemUpdates { get; set; }
@@ -154,59 +105,9 @@ namespace TFS_Release_Notes_Generator.Models
         public int rev { get; set; }
         public Fields fields { get; set; }
         [JsonProperty("_links")]
-        public Links _links { get; set; }
+        public WorkItemLinks _links { get; set; }
     }
 
     #endregion
 
-    public class CommitsResponse : Response<Commit>
-    {
-    }
-
-    public class Response<TEntity>
-    {
-        public int count { get; set; }
-        [JsonProperty("value")]
-        public List<TEntity> items { get; set; }
-    }
-
-    #region ViewModels
-
-
-    /// <summary>
-    /// Release Commit View Model.
-    /// </summary>
-    public class ReleaseCommit : Commit
-    {
-        /// <summary>
-        /// Regex extracted version name/number from comment text.
-        /// </summary>
-        public string version { get; set; }
-
-        public ReleaseCommit(Commit commit, string version)
-        {
-
-            commitId = commit.commitId;
-            author = commit.author;
-            committer = commit.committer;
-            comment = commit.comment;
-            changeCounts = commit.changeCounts;
-            url = commit.url;
-            remoteUrl = commit.remoteUrl;
-            commentTruncated = commit.commentTruncated;
-
-            this.version = version;
-        }
-    }
-
-    #endregion
-
-    #region WIWL Query object for POST requests
-
-    public class Query
-    {
-        public string query { get; set; }
-    }
-
-    #endregion
 }
