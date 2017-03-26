@@ -85,12 +85,12 @@ namespace TFS_Release_Notes_Generator
             var repos = api.GetRepositories().items;
             foreach (var repo in repos)
             {
-                var files = api.GetNuGetPackages(repo.id, "develop");
+                var files = api.GetCsProjects(repo.id, "develop");
                 Console.WriteLine($"Repo: {repo.project.name}");
 
                 foreach (var file in files)
                 {
-                    Console.WriteLine($"Package: {file}");
+                    Console.WriteLine($"Project Files: {file}");
                 }
                 Console.WriteLine();
             }

@@ -23,6 +23,16 @@ namespace TFS_Release_Notes_Generator
             }
         }
 
+        public static byte[] GetData(string url)
+        {
+            using (var client = new WebClient())
+            {
+                client.Headers.Add(HttpRequestHeader.Authorization, GetAuthHeader().ToString());
+
+                return client.DownloadData(url);
+            }
+        }
+
         /// <summary>
         /// <example>POST https://{instance}/DefaultCollection/[{project}/]_apis/wit/wiql?api-version={version}</example>
         /// </summary>

@@ -10,6 +10,7 @@ using TFS_Release_Notes_Generator.Models;
 using System.Text.RegularExpressions;
 using System.Net.Http.Headers;
 using System.Web;
+using System.IO;
 
 namespace TFS_Release_Notes_Generator
 {
@@ -158,22 +159,13 @@ namespace TFS_Release_Notes_Generator
 
             return releases;
         }
-
-        public List<string> GetNuGetPackages(string repositoryGuid, string branch)
+        
+        public List<string> GetCsProjects(string repositoryGuid, string branch)
         {
-            var items = GetItems(repositoryGuid, branch, HttpUtility.UrlEncode("/"), "*\\.nupkg", false, true);
+            var items = GetItems(repositoryGuid, branch, HttpUtility.UrlEncode("/"), ".*\\.csproj", false);
 
-            var files = items.SelectMany(x => x.Value.Select(f => f.contentMetadata.fileName).ToList()).ToList();
-
-            return files;
-        }
-
-        public List<string> GetNuGetPackagesSimple(string repositoryGuid, string branch)
-        {
-            var items = GetItems(repositoryGuid, branch, HttpUtility.UrlEncode("/"), 4,"*\\.nupkg", false);
-
-            var files = items.Select(f => f.contentMetadata.fileName).ToList();
-
+            var files = items.Select(f => f.path).ToList();
+            
             return files;
         }
 
@@ -182,7 +174,8 @@ namespace TFS_Release_Notes_Generator
         public List<Item> GetItems(string repositoryGuid, string branch, string path, string regexPattern = "", bool includeFolders = false)
         {
             var action = "items";
-            var url = $"{GetGitUrl()}/repositories/{repositoryGuid}/{action}?versionType=branch&version={branch}&path=&scopePath={path}&recursionLevel=4&includeContentMetadata=true&latestProcessedChange=false&download=false";
+            var apiVersion = "1.0";
+            var url = $"{GetGitUrl()}/repositories/{repositoryGuid}/{action}?versionType=branch&version={branch}&path=&scopePath={path}&recursionLevel=Full&includeContentMetadata=true&latestProcessedChange=false&download=false&api-version={apiVersion}";
 
             List<Item> items = new List<Item>();
 
@@ -191,28 +184,8 @@ namespace TFS_Release_Notes_Generator
             if (!includeFolders)
                 result = result.Where(x => !x.isFolder).ToList();
 
-            if (string.IsNullOrEmpty(regexPattern))
-                result = result.Where(x => x.isFolder || (!x.isFolder && Regex.IsMatch(x.contentMetadata.fileName, regexPattern))).ToList();
-
-            return result;
-        }
-
-        // https://christopher-cassidy.visualstudio.com/_apis/git/repositories/bcc4856d-6444-4ff5-abb2-123032967d54/items?versionType=branch&version=develop&path=&scopePath=%2f&recursionLevel=4&includeContentMetadata=true&latestProcessedChange=false&download=false
-        // https://christopher-cassidy.visualstudio.com/_apis/git/repositories/c5fa7207-cd50-4c74-9546-c9a81b471e0c/items?versionType=branch&version=develop&path=&scopePath=%2FSCD.Business&recursionLevel=4&includeContentMetadata=true&latestProcessedChange=false&download=false";
-        public List<Item> GetItems(string repositoryGuid, string branch, string path, int recursionLevels, string regexPattern = "", bool includeFolders = false)
-        {
-            var action = "items";
-            var url = $"{GetGitUrl()}/repositories/{repositoryGuid}/{action}?versionType=branch&version={branch}&path=&scopePath={path}&recursionLevel={recursionLevels}&includeContentMetadata=true&latestProcessedChange=false&download=false";
-
-            List<Item> items = new List<Item>();
-
-            var result = GetApiResponse<Response<Item>>(url).items;
-
-            if (!includeFolders)
-                result = result.Where(x => !x.isFolder).ToList();
-
-            if (string.IsNullOrEmpty(regexPattern))
-                result = result.Where(x => x.isFolder || (!x.isFolder && Regex.IsMatch(x.contentMetadata.fileName, regexPattern))).ToList();
+            if (!string.IsNullOrEmpty(regexPattern))
+                result = result.Where(x => x.isFolder || (!x.isFolder && Regex.IsMatch(x.path, regexPattern))).ToList();
 
             return result;
         }
@@ -235,6 +208,15 @@ namespace TFS_Release_Notes_Generator
             }
 
             return list;
+        }
+
+        public byte[] GetItem(string repositoryGuid, string branch, string path)
+        {
+            var action = "items";
+            var apiVersion = "1.0";
+            var url = $"{GetGitUrl()}/repositories/{repositoryGuid}/{action}?versionType=branch&version={branch}&path=&scopePath={path}&api-version={apiVersion}";
+
+            return WebApi.GetData(url);
         }
 
         #region Api Wrappers
