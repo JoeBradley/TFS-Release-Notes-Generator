@@ -162,11 +162,15 @@ namespace TFS_Release_Notes_Generator
         
         public List<string> GetCsProjects(string repositoryGuid, string branch)
         {
-            var items = GetItems(repositoryGuid, branch, HttpUtility.UrlEncode("/"), ".*\\.csproj", false);
+            try {
+                var items = GetItems(repositoryGuid, branch, HttpUtility.UrlEncode("/"), ".*\\.csproj", false);
 
-            var files = items.Select(f => f.path).ToList();
-            
-            return files;
+                var files = items.Select(f => f.path).ToList();
+
+                return files;
+            }
+            catch { }
+            return new List<string>();
         }
 
         // https://christopher-cassidy.visualstudio.com/_apis/git/repositories/bcc4856d-6444-4ff5-abb2-123032967d54/items?versionType=branch&version=develop&path=&scopePath=%2f&recursionLevel=4&includeContentMetadata=true&latestProcessedChange=false&download=false
@@ -218,6 +222,12 @@ namespace TFS_Release_Notes_Generator
 
             return WebApi.GetData(url);
         }
+
+        //public List<string> GetRepositoryBranches(string repositoryGuid) {
+        //    //var action = "branches";
+        //    //var apiVersion = "1.0";
+        //    //var url = $"{GetGitUrl()}/repositories/{repositoryGuid}/{action}?api-version={apiVersion}";            
+        //}
 
         #region Api Wrappers
 

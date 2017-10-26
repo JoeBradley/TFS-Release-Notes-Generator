@@ -62,22 +62,23 @@ namespace TFS_Release_Notes_Generator
         {
             foreach (var srcLibrary in srcLibraries)
             {
-                if (!destLibraries.Select(x => x.Name).Contains(srcLibrary.Name))
+                if (!destLibraries.Any(x => x.Name == srcLibrary.Name))
                 {
                     destLibraries.Add(srcLibrary);
                 }
                 else
                 {
                     var destLib = destLibraries.Single(x => x.Name.Equals(srcLibrary.Name));
-                    foreach (var version in srcLibrary.LibraryVersions)
+                    foreach (var srcLibraryVersion in srcLibrary.LibraryVersions)
                     {
-                        if (!destLib.LibraryVersions.Select(x => x.Version).Contains(version.Version))
+                        if (!destLib.LibraryVersions.Any(x => x.Version == srcLibraryVersion.Version))
                         {
-                            destLib.LibraryVersions.Add(version);
+                            destLib.LibraryVersions.Add(srcLibraryVersion);
                         }
                         else {
-                            var destLibraryVersion = destLib.LibraryVersions.Single(x => x.Version.Equals(version.Version));
-                            destLibraryVersion.Projects.AddRange(version.Projects);
+
+                            var destLibraryVersion = destLib.LibraryVersions.Single(x => x.Version.Equals(srcLibraryVersion.Version));
+                            destLibraryVersion.Projects.AddRange(srcLibraryVersion.Projects);
                         }
                     }
                 }
@@ -87,6 +88,7 @@ namespace TFS_Release_Notes_Generator
         {
             Dictionary<string, List<string>> repositoryReferences = new Dictionary<string, List<string>>();
 
+            
             var filePaths = api.GetCsProjects(repositoryGuid, branch);
             foreach (var filePath in filePaths)
             {
